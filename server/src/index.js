@@ -33,6 +33,9 @@ const { pool, initDb } = require('./db');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+// Health check endpoint - always responds 200 (even before DB is ready)
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
 const JWT_SECRET = process.env.JWT_SECRET || 'milk-business-pro-reset-2026-05-01-v2';
 const uploadsDir = process.env.UPLOADS_DIR ? path.resolve(process.env.UPLOADS_DIR) : path.join(__dirname, '..', 'uploads');
 fs.mkdirSync(uploadsDir, { recursive: true });
