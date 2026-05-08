@@ -1118,9 +1118,10 @@ if (hasClientBuild) {
   });
 }
 
-app.listen(PORT, () => {
-  console.log(`Dairy Farm API running on http://localhost:${PORT}`);
-  console.log(`PostgreSQL: ${process.env.DATABASE_URL || 'Not configured'}`);
+// Start server - bind to 0.0.0.0 for Railway
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Dairy Farm API running on http://0.0.0.0:${PORT}`);
+  console.log(`PostgreSQL: ${process.env.DATABASE_URL ? 'configured' : 'Not configured'}`);
   console.log(`Uploads dir: ${uploadsDir}`);
   if (hasClientBuild) {
     console.log(`Serving client build from: ${clientDistPath}`);
