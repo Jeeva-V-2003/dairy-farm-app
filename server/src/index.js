@@ -11,14 +11,23 @@ const { body, validationResult } = require('express-validator');
 const dayjs = require('dayjs');
 const { pool, initDb } = require('./db');
 
-// Initialize database (async IIFE wrapper for CommonJS)
+// Initialize database with retries (async IIFE wrapper for CommonJS)
 (async () => {
-  try {
-    await initDb();
-    console.log('Database initialized successfully');
-  } catch (error) {
-    console.error('Failed to initialize database:', error);
-    process.exit(1);
+  const maxRetries = 10;
+  const retryDelay = 3000;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await initDb();
+      console.log('Database initialized successfully');
+      return;
+    } catch (error) {
+      console.error(`DB init attempt ${attempt}/${maxRetries} failed:`, error.message);
+      if (attempt === maxRetries) {
+        console.error('All DB init attempts exhausted. Exiting.');
+        process.exit(1);
+      }
+      await new Promise(r => setTimeout(r, retryDelay));
+    }
   }
 })();
 
