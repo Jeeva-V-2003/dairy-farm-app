@@ -1,8 +1,11 @@
 const { Pool } = require('pg');
 
+// Railway internal connections (.railway.internal) don't use SSL
+// External PG connections (Supabase, Neon, etc.) may need SSL
+const isRailwayInternal = (process.env.DATABASE_URL || '').includes('.railway.internal');
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  ssl: process.env.NODE_ENV === 'production' && !isRailwayInternal ? { rejectUnauthorized: false } : false
 });
 
 const defaultExpenseCategories = [
